@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>日历组件</title>
+	<style type="text/css">
+		body,div,p,input,ul,h1,h2,h3,h4,h5,span{
+			margin:0;padding:0;
+		}
+		li{
+			list-style-type:none;
+		}
+		.calendar{
+			margin:20px auto;
+			border:#CCC solid 1px;
+			width:400px;
+			overflow: hidden;
+			font-family: Microsoft Yahei;
+			transition:all 0.2s;
+		}
+		.calendar-head .head-top{
+			margin-bottom:6px;
+			position:relative;
+			text-align: center;
+			line-height: 40px;
+			font-size: 18px;
+			color:#000;
+		}
+		.head-top .year,
+		.head-top .month{
+			display: inline-block;
+			margin:0 10px;
+		}
+		select{
+			display: inline-block;
+			height:24px;
+			font-size: 16px;
+		}
+		.pre-month,
+		.next-month{
+			position:absolute;
+			top:0;
+			display: block;
+			padding:0 10px;
+			height:48px;
+			line-height: 48px;
+			font-size: 24px;
+			cursor:pointer;
+			transition:all 0.1s;
+		}
+		.pre-month{
+			left:0;
+		}
+		.next-month{
+			right:0;
+		}
+		.pre-month:hover,
+		.next-month:hover{
+			background-color: #3879D9;
+			color:#FFF;
+		}
+		.calendar-head i{
+			font-style: normal;
+			padding:0 4px;
+		}
+		.calendar-head ul li{
+			width:14.28%;
+			float:left;
+			background-color: #EEE;
+			color:#000;
+			text-align: center;
+			height:48px;
+			line-height: 48px;
+			font-size: 18px;
+			font-weight: bold;
+		}
+
+		.calendar-body ul li{
+			width:14.28%;
+			float:left;
+			background-color: #FFF;
+			color:#000;
+			text-align: center;
+			height:50px;
+			line-height: 50px;
+			font-size: 20px;
+			cursor:pointer;
+			transition: all 0.2s;
+		}
+		.calendar-body ul .active{
+			position:relative;
+			background-color: #3879d9;
+			color:#FFF;
+		}
+		.calendar-body ul .not-belong{
+			color:#CCC;
+		}
+		.calendar-body ul li:hover{
+			background-color: #DDEDF9;
+		}
+		.calendar-body ul .active div{
+			width:0;
+			height:0;
+			position:absolute;
+			left:50%;
+			top:50%;
+			overflow: hidden;
+			transition-duration: 0.4s;
+			transition-timing-function: linear;
+			transition-property: width,height,left,top;
+		}
+		.calendar-body ul .active:hover div{
+			width:100%;
+			height:100%;
+			left:0;
+			top:0;
+			background-color: #DDEDF9;
+			color:#000;
+		}
+
+	</style>
+</head>
+<body>
+	<div id="container"></div>
+
+	<script type="text/javascript" src="calendar.js"></script>
+	<script type="text/javascript">
+		var container = document.getElementById("container");
+
+		var cal = new PCalendar({
+			target:container,
+			date:new Date(),
+			duration:7,
+			callback:function(date){
+				console.log(date);
+			}
+		})
+	</script>
+</body>
+</html>

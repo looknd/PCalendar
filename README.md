@@ -16,7 +16,8 @@
    format:function(date){
      return nDate;//after format
    },
- 	 callback:function(date){}
+   callback:function(date){
+   }
  }
  ```
 ###示例

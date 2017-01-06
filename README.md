@@ -10,13 +10,13 @@
 ###配置格式
 ```
  config: {
- 	target: document.getElementById("container"),
- 	date:new Date(),
-  type:"show",//or "hide"
-  format:function(date){
-    return nDate;//after format
-  },
- 	callback:function(date){}
+   target: document.getElementById("container"),
+   date:new Date(),
+   type:"show",//or "hide"
+   format:function(date){
+     return nDate;//after format
+   },
+ 	 callback:function(date){}
  }
  ```
 ###示例

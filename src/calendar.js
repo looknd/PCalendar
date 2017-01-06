@@ -1,10 +1,11 @@
+"use strict";
 
 //日历组件
 /*配置格式
  config: {
  	target: document.getElementById("container"),
  	date:new Date(),
- 	duration:number,
+ 	type:"show", //or "hide"
  	callback:function(date){}
  }
 */
@@ -17,11 +18,13 @@ var PCalendar = function(config){
 	this.month = config.date.getMonth()+1 || this.now.getMonth()+1;
 	this.date = config.date.getDate() || this.now.getDate();
 
-	this.duration = config.duration || 1;
+	// this.duration = config.duration || 1;
 	this.daysInMonth = [];
 	this.daysInCalendar = [];
 	this.target = config.target;
 	this.callback = config.callback || function(date){console.log(date)};
+	this.type = config.type || "show";
+	this.format = config.format || null;
 
 	this.init();
 }
@@ -67,24 +70,81 @@ PCalendar.prototype = {
 			+"</div>"
 		+"</div>";
 
-		this.getCal();
-		//event
-		var _this = this;
-		
+		//显示、隐藏日历
+		if(this.type=="hide"){
+			this.target.innerHTML = ""
+			+"<div class='calendar-wrap'>"
+				+"<a href='javascript:;' class='calendar-btn'>请选择日期</a>"
+				+"<div class='calendar absolute'>"
+				+"<div class='calendar-head'>"
+						+"<div class='head-top'><span class='pre-month'>←</span><div class='year'></div>年"
+						+"<div class='month'>"
+						+"<select>"
+						+"<option value='1'>1</option>"
+						+"<option value='2'>2</option>"
+						+"<option value='3'>3</option>"
+						+"<option value='4'>4</option>"
+						+"<option value='5'>5</option>"
+						+"<option value='6'>6</option>"
+						+"<option value='7'>7</option>"
+						+"<option value='8'>8</option>"
+						+"<option value='9'>9</option>"
+						+"<option value='10'>10</option>"
+						+"<option value='11'>11</option>"
+						+"<option value='12'>12</option>"
+						+"</select>"
+						+"</div>月"
+						+"<span class='next-month'>→</span></div>"			
+						+"<ul>"
+							+"<li>Sun</li>"
+							+"<li>Mon</li>"
+							+"<li>Tue</li>"
+							+"<li>Wed</li>"
+							+"<li>Thu</li>"
+							+"<li>Fri</li>"
+							+"<li>Sat</li>"
+						+"</ul>"
+					+"</div>"
+					+"<div class='calendar-body'>"
+						+"<ul>"
+						+"</ul>"
+					+"</div>"
+				+"</div>";
+			+"</div>";
+
+			this.eCalendar = this.target.querySelector(".calendar");
+			this.eBtn = this.target.querySelector(".calendar-btn");
+			this.eCalendar.style.display = "none";
+			this.eBtn.textContent = this.format(this.configDate);
+			var _this = this;
+
+			this.eBtn.addEventListener("click", function(){
+				if(_this.eCalendar.style.display=="none"){
+					this.textContent = "请选择日期";
+					_this.eCalendar.style.display = "block";
+				}else{
+					this.textContent = _this.format(_this.configDate);
+					_this.eCalendar.style.display = "none";
+				}
+					
+			},false);
+		}
 		//切换月份
-		document.querySelector(".pre-month").addEventListener("click", function(){
-			_this.switchYearMonth("pre");
-			_this.getCal();
-		},false);
-		document.querySelector(".next-month").addEventListener("click", function(){
-			_this.switchYearMonth("next");
-			_this.getCal();
-		},false);
-		document.querySelector(".head-top .month").addEventListener("change",function(event){
+		this.target.querySelector(".pre-month").addEventListener("click", function(){
+			this.switchYearMonth("pre");
+			this.getCal();
+		}.bind(this),false);
+		this.target.querySelector(".next-month").addEventListener("click", function(){
+			this.switchYearMonth("next");
+			this.getCal();
+		}.bind(this),false);
+		this.target.querySelector(".head-top .month").addEventListener("change",function(event){
 			var selectMonth = event.target.value;
-			_this.switchYearMonth(null,_this.year,selectMonth);
-			_this.getCal();
-		},false)
+			this.switchYearMonth(null,this.year,selectMonth);
+			this.getCal();
+		}.bind(this),false);
+
+		this.getCal();
 	},
 	//计算当前页日历数据
 	getCal:function(tYear,tMonth){
@@ -118,14 +178,13 @@ PCalendar.prototype = {
 	},
 	//根据数据渲染页面
 	renderCal:function(){
-		var days = "",
-			_this = this;
+		var days = "";
 		for(var i=0;i<this.daysInCalendar.length;i++){
 			var day = this.daysInCalendar[i];
 			if(isArray(day)){//当前月
 				for(var j in day){
 					if((day[j]==this.configDate.getDate()) && (this.month==this.configDate.getMonth()+1) && (this.year==this.configDate.getFullYear())){//当天
-						days+=("<li class='active'><div>"+day[j]+"</div>"+day[j]+"</li>");
+						days+=("<li class='active'>"+day[j]+"</li>");
 					}else{
 						days+=("<li>"+day[j]+"</li>");
 					}
@@ -138,8 +197,8 @@ PCalendar.prototype = {
 				}
 			}
 		};
-		document.querySelector(".calendar-body>ul").innerHTML = days;
-		document.querySelector(".calendar-head .year").innerHTML = ""
+		this.target.querySelector(".calendar-body>ul").innerHTML = days;
+		this.target.querySelector(".calendar-head .year").innerHTML = ""
 		+"<select>"
 		+"<option value='"+~~(this.year-3)+"'>"+~~(this.year-3)+"</option>"
 		+"<option value='"+~~(this.year-2)+"'>"+~~(this.year-2)+"</option>"
@@ -150,24 +209,27 @@ PCalendar.prototype = {
 		+"<option value="+~~(this.year+3)+">"+~~(this.year+3)+"</option>"
 		+"</select>";
 
-		document.querySelector(".year").addEventListener("change", function(event){
+		this.target.querySelector(".year").addEventListener("change", function(event){
 			var selectYear = parseInt(event.target.value);
-			_this.switchYearMonth(null,selectYear,_this.month);
-			_this.getCal();
-		},false)
+			this.switchYearMonth(null,selectYear,this.month);
+			this.getCal();
+		}.bind(this),false)
 
 		//默认月份
-		var options = document.querySelectorAll(".month select option");
+		var options = this.target.querySelectorAll(".month select option");
 		options.forEach(function(option){
-			if(option.value==_this.month){
+			if(option.value==this.month){
 				option.selected = true;
 			}
-		})
+		}.bind(this))
+
 		//click选择日期
-		var lis = document.querySelectorAll(".calendar-body>ul>li");
+		var _this = this;
+		var lis = this.target.querySelectorAll(".calendar-body>ul>li");
 		[].forEach.call(lis,function(li){
-			li.addEventListener("click", function(){
-		
+			
+			li.onclick = function(event){
+				event.preventDefault();
 				if(this.className=="not-belong"){
 					var belong = this.attributes.daybelong.value;
 					if(belong=="pre"){//pre-month
@@ -178,11 +240,17 @@ PCalendar.prototype = {
 				}else{
 				
 				}
-				_this.date = this.textContent;
+				_this.date = ~~(this.textContent);
 				_this.configDate = new Date(_this.year,_this.month-1,_this.date);
 				_this.getCal();
-				_this.callback(_this.configDate);//执行回调
-			},false);
+
+				if(_this.type=="hide"){
+					_this.eCalendar.style.display = "none";
+					_this.eBtn.textContent = _this.format(_this.configDate);
+				}
+				// 
+				_this.callback(_this.configDate,_this.format?_this.format(_this.configDate):null);//执行回调
+			};
 		})
 	},
 	//切换年月
@@ -229,12 +297,5 @@ PCalendar.prototype = {
 function isArray(o) {
     return Object.prototype.toString.call(o) === '[object Array]';
 }
-//根据year,month,date生成标准date对象
-function getStandardDate(year,month,date){
-	var res = new Date();
-	res.setFullYear(year);
-	res.setMonth(month-1);
-	res.setDate(date);
-	return res;
-}
+
 

@@ -14,7 +14,7 @@
    date:new Date(),
    type:"show",//or "hide"
    format:function(date){
-     return nDate;//after format
+     return nDate;
    },
    callback:function(date){
    }
@@ -33,8 +33,6 @@ var cal = new PCalendar({
       return date.getFullYear()+"-"+~~(date.getMonth()+1)+"-"+date.getDate();;//YYYY-MM-DD
     },
     callback:function(date,format){
-      console.log("标准格式:"+date);
-      console.log("format:"+format);
     }
 });
 ```
